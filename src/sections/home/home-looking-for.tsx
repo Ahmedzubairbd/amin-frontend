@@ -19,19 +19,7 @@ import { MotionViewport, varFade } from 'src/components/animate';
 export default function HomeLookingFor() {
   const mdUp = useResponsive('up', 'md');
 
-  const renderBtn = (
-    <Button
-      color="inherit"
-      size="large"
-      variant="outlined"
-      target="_blank"
-      rel="noopener"
-      href={paths.payment}
-      endIcon={<Iconify icon="eva:arrow-ios-forward-fill" />}
-    >
-      Visit Payment Procedures
-    </Button>
-  );
+
 
   const renderDescription = (
     <Stack
@@ -47,20 +35,6 @@ export default function HomeLookingFor() {
           Looking For a
         </Typography>
       </m.div>
-
-      <m.div variants={varFade().inDown}>
-        <Typography
-          variant="h2"
-          sx={{
-            mt: 3,
-            mb: { md: 5 },
-          }}
-        >
-          Looking for Our Payment Procedures?
-        </Typography>
-      </m.div>
-
-      {mdUp && <m.div variants={varFade().inDown}> {renderBtn} </m.div>}
     </Stack>
   );
 
@@ -81,12 +55,6 @@ export default function HomeLookingFor() {
             <Image disabledEffect alt="rocket" src="/assets/images/home/zone_landing.webp" />
           </m.div>
         </Grid>
-
-        {!mdUp && (
-          <Grid xs={12} sx={{ textAlign: 'center' }}>
-            {renderBtn}
-          </Grid>
-        )}
       </Grid>
     </Container>
   );

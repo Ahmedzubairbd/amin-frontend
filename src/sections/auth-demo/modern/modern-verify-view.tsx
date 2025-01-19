@@ -15,25 +15,38 @@ import { RouterLink } from 'src/routes/components';
 // components
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFCode, RHFTextField } from 'src/components/hook-form';
+import { useSearchParams } from 'src/routes/hook';
+import { useRouter } from 'src/routes/hook';
+import { useAuthContext } from 'src/auth/hooks';
+import { useCountdownSeconds } from 'src/hooks/use-countdown';
 // assets
-import { EmailInboxIcon } from 'src/assets/icons';
+
 
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
   code: string;
-  email: string;
+  phone: string;
 };
 
 export default function ModernVerifyView() {
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+
+  const phone = searchParams.get('phone');
+
+  const { confirmRegister, resendCodeRegister } = useAuthContext();
+
+  const { countdown, counting, startCountdown } = useCountdownSeconds(60);
   const VerifySchema = Yup.object().shape({
     code: Yup.string().min(6, 'Code must be at least 6 characters').required('Code is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    phone: Yup.string().required('Phone Number is Required').matches(/^\+8801[3-9]\d{8}$/,'Number must be a valid Phone Number'),
   });
 
   const defaultValues = {
     code: '',
-    email: '',
+    phone: phone || '',
   };
 
   const methods = useForm({
@@ -43,25 +56,40 @@ export default function ModernVerifyView() {
   });
 
   const {
+    watch,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = useCallback(async (data: FormValuesProps) => {
+  const values = watch();
+
+  const onSubmit = useCallback(
+    async (data: FormValuesProps) => {
+      try {
+        await confirmRegister?.(data.phone, data.code);
+        router.push(paths.authDemo.modern.login);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [confirmRegister, router]
+  );
+  const handleResendCode = useCallback(async () => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      console.info('DATA', data);
+      startCountdown();
+      await resendCodeRegister?.(values.phone);
     } catch (error) {
       console.error(error);
     }
-  }, []);
+  }, [resendCodeRegister, startCountdown, values.phone]);
 
   const renderForm = (
     <Stack spacing={3} alignItems="center">
       <RHFTextField
-        name="email"
-        label="Email"
-        placeholder="example@gmail.com"
+         name="phone" 
+         label="Phone Number"
+         placeholder="+8801XXXXXXXXX"
+         type="tel" 
         InputLabelProps={{ shrink: true }}
       />
 
@@ -81,17 +109,22 @@ export default function ModernVerifyView() {
         {`Don’t have a code? `}
         <Link
           variant="subtitle2"
+          onClick={handleResendCode}
           sx={{
             cursor: 'pointer',
+            ...(counting && {
+              color: 'text.disabled',
+              pointerEvents: 'none',
+            }),
           }}
         >
-          Resend code
+          Resend code {counting && `(${countdown}s)`}
         </Link>
       </Typography>
 
       <Link
         component={RouterLink}
-        href={paths.authDemo.classic.login}
+        href={paths.authDemo.modern.login}
         color="inherit"
         variant="subtitle2"
         sx={{
@@ -107,14 +140,14 @@ export default function ModernVerifyView() {
 
   const renderHead = (
     <>
-      <EmailInboxIcon sx={{ height: 96 }} />
+     <Iconify icon="mdi:message-text" width={96} height={96} />
 
       <Stack spacing={1} sx={{ my: 5 }}>
-        <Typography variant="h3">Please check your email!</Typography>
+        <Typography variant="h3">Please check your phone</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          We have emailed a 6-digit confirmation code to acb@domain, please enter the code in below
-          box to verify your email.
+          We have sent a 6-digit confirmation code to your number, please enter the code in below
+          box to verify your Number.
         </Typography>
       </Stack>
     </>

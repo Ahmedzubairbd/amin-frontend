@@ -311,7 +311,7 @@ export default function HomeHero() {
           alt={isLight ? 'light_1' : 'dark_1'}
           src={
             isLight
-              ? `/assets/images/home/hero/light_1.webp`
+              ? `/assets/images/home/hero/Light.png`
               : `/assets/images/home/hero/dark_1.webp`
           }
           sx={{ position: 'absolute', mt: -5 }}
@@ -323,7 +323,7 @@ export default function HomeHero() {
           alt={isLight ? 'light_1' : 'dark_1'}
           src={
             isLight
-              ? `/assets/images/home/hero/light_1.webp`
+              ? `/assets/images/home/hero/Light.png`
               : `/assets/images/home/hero/dark_1.webp`
           }
           sx={{ position: 'absolute' }}
@@ -342,7 +342,7 @@ export default function HomeHero() {
           alt={isLight ? 'light_2' : 'dark_2'}
           src={
             isLight
-              ? `/assets/images/home/hero/light_2.webp`
+              ? `/assets/images/home/hero/Light.png`
               : `/assets/images/home/hero/dark_2.webp`
           }
           sx={{ position: 'absolute', mt: -5 }}
@@ -354,7 +354,7 @@ export default function HomeHero() {
           alt={isLight ? 'light_2' : 'dark_2'}
           src={
             isLight
-              ? `/assets/images/home/hero/light_2.webp`
+              ? `/assets/images/home/hero/Light.png`
               : `/assets/images/home/hero/dark_2.webp`
           }
           sx={{ position: 'absolute' }}

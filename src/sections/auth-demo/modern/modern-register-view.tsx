@@ -1,7 +1,7 @@
 'use client';
 
 import * as Yup from 'yup';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -19,11 +19,15 @@ import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { RouterLink } from 'src/routes/components';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { useAuthContext } from 'src/auth/hooks';
+import { useRouter } from 'src/routes/hook';
+import { reset } from 'numeral';
+import Alert from '@mui/material/Alert';
 
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
-  email: string;
+  phone: string;
   password: string;
   firstName: string;
   lastName: string;
@@ -31,18 +35,23 @@ type FormValuesProps = {
 
 export default function ModernRegisterView() {
   const password = useBoolean();
+  const { register } = useAuthContext();
+
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const router = useRouter();
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
     lastName: Yup.string().required('Last name required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    phone: Yup.string().required('Phone Number is Required').matches(/^\+8801[3-9]\d{8}$/,'Number must be a valid Bangladeshi Phone Number'),
     password: Yup.string().required('Password is required'),
   });
 
   const defaultValues = {
     firstName: '',
     lastName: '',
-    email: '',
+    phone: '',
     password: '',
   };
 
@@ -58,12 +67,21 @@ export default function ModernRegisterView() {
 
   const onSubmit = useCallback(async (data: FormValuesProps) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      console.info('DATA', data);
+      await register?.(data.phone, data.password, data.firstName, data.lastName);
+
+      const searchParams = new URLSearchParams({ phone: data.phone }).toString();
+
+      const href = `${paths.authDemo.modern.verify}?${searchParams}`;
+
+      router.push(href);
     } catch (error) {
       console.error(error);
+      reset();
+      setErrorMsg(typeof error === 'string' ? error : (error as Error).message);
     }
-  }, []);
+  },
+  [register, reset, router]
+  );
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
@@ -98,12 +116,17 @@ export default function ModernRegisterView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
+      {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
         <RHFTextField name="firstName" label="First name" />
         <RHFTextField name="lastName" label="Last name" />
       </Stack>
 
-      <RHFTextField name="email" label="Email address" />
+      <RHFTextField 
+        name="phone" 
+        label="Phone Number"
+        placeholder="+8801XXXXXXXXX"
+        type="tel"  />
 
       <RHFTextField
         name="password"

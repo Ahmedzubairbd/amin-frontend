@@ -26,7 +26,7 @@ import FormProvider, { RHFTextField, RHFCode } from 'src/components/hook-form';
 
 type FormValuesProps = {
   code: string;
-  email: string;
+  phone: string;
   password: string;
   confirmPassword: string;
 };
@@ -36,7 +36,7 @@ export default function ModernNewPasswordView() {
 
   const NewPasswordSchema = Yup.object().shape({
     code: Yup.string().min(6, 'Code must be at least 6 characters').required('Code is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    phone: Yup.string().required('Phone Number is Required').matches(/^\+8801[3-9]\d{8}$/,'Number must be a valid Bangladeshi Phone Number'),
     password: Yup.string()
       .min(6, 'Password must be at least 6 characters')
       .required('Password is required'),
@@ -47,7 +47,7 @@ export default function ModernNewPasswordView() {
 
   const defaultValues = {
     code: '',
-    email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
   };
@@ -75,9 +75,10 @@ export default function ModernNewPasswordView() {
   const renderForm = (
     <Stack spacing={3} alignItems="center">
       <RHFTextField
-        name="email"
-        label="Email"
-        placeholder="example@gmail.com"
+        name="phone" 
+        label="Phone Number"
+        placeholder="+8801XXXXXXXXX"
+        type="tel"
         InputLabelProps={{ shrink: true }}
       />
 
@@ -159,9 +160,9 @@ export default function ModernNewPasswordView() {
         <Typography variant="h3">Request sent successfully!</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          We&apos;ve sent a 6-digit confirmation email to your email.
+          We&apos;ve sent a 6-digit confirmation Code to your Phone.
           <br />
-          Please enter the code in below box to verify your email.
+          Please enter the code in below box to verify your Phone Number.
         </Typography>
       </Stack>
     </>

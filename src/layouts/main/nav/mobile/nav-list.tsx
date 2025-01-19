@@ -45,14 +45,7 @@ export default function NavList({ item }: NavListProps) {
               [`& .${listClasses.root}`]: {
                 '&:last-of-type': {
                   [`& .${listItemButtonClasses.root}`]: {
-                    height: 160,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    bgcolor: 'background.neutral',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundImage: 'url(/assets/illustrations/illustration_dashboard.png)',
                     [`& .${listItemTextClasses.root}`]: {
-                      display: 'none',
                     },
                   },
                 },

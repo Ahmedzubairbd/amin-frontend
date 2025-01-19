@@ -79,7 +79,7 @@ export default function ClassicRegisterView() {
       } catch (error) {
         console.error(error);
         reset();
-        setErrorMsg(typeof error === 'string' ? error : error.message);
+        setErrorMsg(typeof error === 'string' ? error : (error as Error).message);
       }
     },
     [register, reset, router]

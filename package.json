@@ -5,10 +5,13 @@
   "description": "Hospital Management System",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 8081",
     "start": "next start",
     "build": "next build",
-    "export": "next build && next export -o _static"
+    "export": "yarn build && next export -o _static",
+    "clear-all": "rm -rf .next .swc _static out node_modules",
+    "re-start": "rm -rf .next .swc _static out node_modules && yarn install && yarn dev",
+    "re-build": "rm -rf .next .swc _static out node_modules && yarn install && yarn build"
   },
   "dependencies": {
     "@emotion/cache": "^11.10.5",

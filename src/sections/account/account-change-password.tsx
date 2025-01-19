@@ -69,9 +69,8 @@ export default function AccountChangePassword() {
     },
     [enqueueSnackbar, reset]
   );
-
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit as any)}>
       <Stack component={Card} spacing={3} sx={{ p: 3 }}>
         <RHFTextField
           name="oldPassword"

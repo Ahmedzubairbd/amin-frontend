@@ -14,7 +14,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 // theme
 import { bgBlur } from 'src/theme/css';
 // routes
-import { paths } from 'src/routes/paths';
+// import { paths } from 'src/routes/paths';
 // components
 import Logo from 'src/components/logo';
 import Label from 'src/components/label';
@@ -68,7 +68,7 @@ export default function Header() {
             }}
             badgeContent={
               <Link
-                href={paths.changelog}
+                href="/changelog"
                 target="_blank"
                 rel="noopener"
                 underline="none"
@@ -88,7 +88,7 @@ export default function Header() {
           {mdUp && <NavDesktop offsetTop={offsetTop} data={navConfig} />}
 
           <Stack alignItems="center" direction={{ xs: 'row', md: 'row-reverse' }}>
-            <Button variant="soft" target="_blank" rel="noopener" href="">
+            <Button variant="soft" target="_blank" rel="noopener" href="/auth-demo/modern/login">
               Patient Portal
             </Button>
 

@@ -40,27 +40,27 @@ export default function AccountGeneral() {
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    photoURL: Yup.mixed().required('Avatar is required'),
+    photoURL: Yup.mixed().nullable(),
     phoneNumber: Yup.string().required('Phone number is required'),
     country: Yup.string().required('Country is required'),
-    address: Yup.string().required('Address is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
+    address: Yup.string().nullable(),
+    state: Yup.string().nullable(),
+    city: Yup.string().nullable(),
     zipCode: Yup.string().required('Zip code is required'),
-    about: Yup.string().required('About is required'),
+    about: Yup.string().nullable(),
   });
 
-  const defaultValues = {
+  const defaultValues: IUserAccount = {
     displayName: user?.displayName || '',
     email: user?.email || '',
     photoURL: user?.photoURL || null,
     phoneNumber: user?.phoneNumber || '',
     country: user?.country || '',
     address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
+    state: user?.state || null,
+    city: user?.city || null,
     zipCode: user?.zipCode || '',
-    about: user?.about || '',
+    about: user?.about || null,
     isPublic: user?.isPublic || false,
   };
 

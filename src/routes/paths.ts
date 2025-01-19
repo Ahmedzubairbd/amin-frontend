@@ -20,7 +20,6 @@ export const paths = {
   comingSoon: '/coming-soon',
   maintenance: '/maintenance',
   pricing: '/pricing',
-  payment: '/payment',
   about: '/about-us',
   contact: '/contact-us',
   faqs: '/faqs',
@@ -28,6 +27,8 @@ export const paths = {
   page404: '/404',
   page500: '/500',
   components: '/components',
+  services: '/services',
+  finddoctor: '/find-doctor',
   docs: 'https://amindiagnostics.net/doc',
   // AUTH
   auth: {
@@ -78,16 +79,6 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
       },
     },
-    // test: {
-    //   root: `${ROOTS.DASHBOARD}/test`,
-    //   new: `${ROOTS.DASHBOARD}/test/new`,
-    //   details: (id: string) => `${ROOTS.DASHBOARD}/test/${id}`,
-    //   edit: (id: string) => `${ROOTS.DASHBOARD}/test/${id}/edit`,
-    //   demo: {
-    //     details: `${ROOTS.DASHBOARD}/test/${MOCK_ID}`,
-    //     edit: `${ROOTS.DASHBOARD}/test/${MOCK_ID}/edit`,
-    //   },
-    // },
     invoice: {
       root: `${ROOTS.DASHBOARD}/invoice`,
       new: `${ROOTS.DASHBOARD}/invoice/new`,
@@ -98,13 +89,6 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/invoice/${MOCK_ID}/edit`,
       },
     },
-    // order: {
-    //   root: `${ROOTS.DASHBOARD}/order`,
-    //   details: (id: string) => `${ROOTS.DASHBOARD}/order/${id}`,
-    //   demo: {
-    //     details: `${ROOTS.DASHBOARD}/order/${MOCK_ID}`,
-    //   },
-    // },
     job: {
       root: `${ROOTS.DASHBOARD}/job`,
       new: `${ROOTS.DASHBOARD}/job/new`,

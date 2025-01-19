@@ -68,7 +68,7 @@ export default function ComponentHero() {
             <Box
               component="img"
               alt="illustrations characters"
-              src="/assets/illustrations/characters/character_7.png"
+              src="/assets/illustrations/characters/character_8.png"
               sx={{ maxWidth: 320 }}
             />
           </m.div>

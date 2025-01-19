@@ -12,6 +12,8 @@ import Typography from '@mui/material/Typography';
 // routes
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import { useRouter } from 'src/routes/hook';
+import { useAuthContext } from 'src/auth/hooks';
 // assets
 import { PasswordIcon } from 'src/assets/icons';
 // components
@@ -21,18 +23,20 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
-  email: string;
+  phone: string;
 };
 
 export default function ModernForgotPasswordView() {
+  const { forgotPassword } = useAuthContext();
+  const router = useRouter();
   const ResetPasswordSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    phone: Yup.string().required('Phone Number is Required').matches(/^\+8801[3-9]\d{8}$/,'Number must be a valid Bangladeshi Phone Number'),
   });
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(ResetPasswordSchema),
     defaultValues: {
-      email: '',
+      phone: '',
     },
   });
 
@@ -41,18 +45,30 @@ export default function ModernForgotPasswordView() {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = useCallback(async (data: FormValuesProps) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      console.info('DATA', data);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+  const onSubmit = useCallback(
+    async (data: FormValuesProps) => {
+      try {
+        await forgotPassword?.(data.phone);
+
+        const searchParams = new URLSearchParams({ phone: data.phone }).toString();
+
+        const href = `${paths.authDemo.modern.newPassword}?${searchParams}`;
+        router.push(href);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [forgotPassword, router]
+  );
 
   const renderForm = (
     <Stack spacing={3} alignItems="center">
-      <RHFTextField name="email" label="Email address" />
+            <RHFTextField 
+        name="phone" 
+        label="Phone Number"
+        placeholder="+8801XXXXXXXXX"
+        type="tel" 
+      />
 
       <LoadingButton
         fullWidth
@@ -90,7 +106,7 @@ export default function ModernForgotPasswordView() {
         <Typography variant="h3">Forgot your password?</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Please enter the email address associated with your account and We will email you a link
+          Please enter the Phone Number associated with your account and We will send you an OTP Code
           to reset your password.
         </Typography>
       </Stack>

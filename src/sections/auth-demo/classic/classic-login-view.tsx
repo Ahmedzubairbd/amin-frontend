@@ -73,7 +73,7 @@ export default function ClassicLoginView() {
       } catch (error) {
         console.error(error);
         reset();
-        setErrorMsg(typeof error === 'string' ? error : error.message);
+        setErrorMsg(typeof error === 'string' ? error : (error as Error).message);
       }
     },
     [login, reset, returnTo]

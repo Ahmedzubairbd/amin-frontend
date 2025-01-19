@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/workspaces/amin-frontend/src/app/page\":[\"static/media/83c76cede88902c5-s.p.woff2\",\"static/media/8bf7b2ceda89477b-s.p.woff2\"],\"/workspaces/amin-frontend/src/app/layout\":[\"static/media/83c76cede88902c5-s.p.woff2\",\"static/media/8bf7b2ceda89477b-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

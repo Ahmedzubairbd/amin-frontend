@@ -1,1 +1,0 @@
-self.__REACT_LOADABLE_MANIFEST="{\"components/animate/motion-lazy.tsx -> ./features.js\":{\"id\":\"components/animate/motion-lazy.tsx -> ./features.js\",\"files\":[\"static/chunks/_app-pages-browser_src_components_animate_features_js.js\"]}}"

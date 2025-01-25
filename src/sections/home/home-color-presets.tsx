@@ -108,7 +108,7 @@ export default function HomeColorPresets() {
           position: 'relative',
         }}
       >
-        {options.map((color, index) => {
+        {/* {options.map((color, index) => {
           const { name, value } = color;
 
           const selected = settings.themeColorPresets === name;
@@ -138,7 +138,7 @@ export default function HomeColorPresets() {
               {selected && <Iconify icon="eva:color-picker-fill" width={16} />}
             </CardActionArea>
           );
-        })}
+        })} */}
       </Stack>
     </m.div>
   );

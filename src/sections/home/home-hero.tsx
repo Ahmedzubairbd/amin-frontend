@@ -3,33 +3,31 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 // @mui
 import { styled, alpha, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
+
 import Stack from '@mui/material/Stack';
-import Rating from '@mui/material/Rating';
-import Button from '@mui/material/Button';
+
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
 // routes
-import { paths } from 'src/routes/paths';
+
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // theme
 import { textGradient, bgGradient, bgBlur } from 'src/theme/css';
-import { secondaryFont } from 'src/theme/typography';
+import { primaryFont } from 'src/theme/typography';
 // layouts
 import { HEADER } from 'src/layouts/config-layout';
 // components
-import Iconify from 'src/components/iconify';
-import SvgColor from 'src/components/svg-color';
-import { RouterLink } from 'src/routes/components';
+
 import { MotionContainer, varFade } from 'src/components/animate';
+import CarouselDoctors from './home-doctors';
 
 // ----------------------------------------------------------------------
 
 const StyledRoot = styled('div')(({ theme }) => ({
   ...bgGradient({
-    color: alpha(theme.palette.background.default, theme.palette.mode === 'light' ? 0.9 : 0.94),
+    color: alpha(theme.palette.background.default, theme.palette.mode === 'light' ? 0.7 : 0.8),
     imgUrl: '/assets/background/overlay_3.jpg',
   }),
   width: '100%',
@@ -51,21 +49,20 @@ const StyledWrapper = styled('div')(({ theme }) => ({
   },
 }));
 
-const StyledTextGradient = styled(m.h1)(({ theme }) => ({
+const StyledTextGradient = styled(m.h3)(({ theme }) => ({
   ...textGradient(
     `300deg, ${theme.palette.primary.main} 0%, ${theme.palette.warning.main} 25%, ${theme.palette.primary.main} 50%, ${theme.palette.warning.main} 75%, ${theme.palette.primary.main} 100%`
   ),
-  padding: 0,
-  marginTop: 8,
+  padding: 4,
+  marginTop: 4,
   lineHeight: 1,
-  marginBottom: 24,
-  letterSpacing: 8,
+  marginBottom: 4,
   textAlign: 'center',
   backgroundSize: '400%',
-  fontSize: `${64 / 16}rem`,
-  fontFamily: secondaryFont.style.fontFamily,
+  fontSize: `${48 / 16}rem`,
+  fontFamily: primaryFont.style.fontFamily,
   [theme.breakpoints.up('md')]: {
-    fontSize: `${96 / 16}rem`,
+    fontSize: `${64 / 16}rem`,
   },
 }));
 
@@ -170,28 +167,40 @@ export default function HomeHero() {
       sx={{
         height: 1,
         mx: 'auto',
-        maxWidth: 480,
+        minWidth: 480,
         opacity: opacity > 0 ? opacity : 0,
         mt: {
           md: `-${HEADER.H_DESKTOP + percent * 2.5}px`,
         },
       }}
     >
+
+  
       <m.div variants={varFade().in}>
-        <Typography
-          variant="h2"
+        {/* Carousel for Doctors */}
+    
+        <Typography variant='h5'
           sx={{
-            textAlign: 'center',
+            textAlign: 'center', mt: 4
           }}
         >
-          Start your <br />
-          Journey with
-        </Typography>
-      </m.div>
+          Meet Our Expert Doctors 
+        </Typography> 
+        <Stack
+          sx={{
+            width: '100%',
+            maxWidth: 480,
+            mt: 2,
+            mx: 'auto',
+          }}
+        >
+          <CarouselDoctors />
 
+      
+  
       <m.div variants={varFade().in}>
         <StyledTextGradient
-          animate={{ backgroundPosition: '200% center' }}
+          animate={{ backgroundPosition: '100% center' }}
           transition={{
             repeatType: 'reverse',
             ease: 'linear',
@@ -199,91 +208,19 @@ export default function HomeHero() {
             repeat: Infinity,
           }}
         >
-          Amin Diagnostics
+       Amin Diagnostics
         </StyledTextGradient>
       </m.div>
-
       <m.div variants={varFade().in}>
-        <Typography variant="body2" sx={{ textAlign: 'center' }}>
-          Most Exceptional One and Only Fully Secured Medical Solution
+        <Typography variant="h4" sx={{ textAlign: 'center' }}>
+        Your Health, Our Priority
         </Typography>
-      </m.div>
-
-      <m.div variants={varFade().in}>
-        <Stack
-          spacing={0.75}
-          direction="row"
-          alignItems="center"
-          justifyContent="center"
-          sx={{ my: 3 }}
-        >
-          <Rating readOnly value={4.95} precision={0.1} max={5} />
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            <Box component="strong" sx={{ mr: 0.5, color: 'text.primary' }}>
-              4.96/5
-            </Box>
-            (99+ reviews)
-          </Typography>
+          </m.div>
         </Stack>
       </m.div>
-
-      <m.div variants={varFade().in}>
-        <Stack spacing={1.5} direction={{ xs: 'column-reverse', sm: 'row' }} sx={{ mb: 5 }}>
-          <Stack alignItems="center" spacing={2}>
-            <Button
-              component={RouterLink}
-              href={paths.authDemo.classic.login}
-              color="inherit"
-              size="large"
-              variant="contained"
-              startIcon={<Iconify icon="eva:flash-fill" width={24} />}
-            >
-              Patient Login
-            </Button>
-
-            <Link
-              color="inherit"
-              variant="caption"
-              target="_blank"
-              rel="noopener"
-              href={paths.dashboard.root}
-              sx={{ textDecoration: 'underline', display: 'inline-flex', alignItems: 'center' }}
-            >
-              <Iconify icon="eva:external-link-fill" width={16} sx={{ mr: 0.5 }} />
-              Admin Dashboard
-            </Link>
-          </Stack>
-
-          <Button
-            color="inherit"
-            size="large"
-            variant="outlined"
-            startIcon={<Iconify icon="eva:external-link-fill" width={24} />}
-            target="_blank"
-            rel="noopener"
-            href={paths.authDemo.classic.register}
-            sx={{ borderColor: 'text.primary' }}
-          >
-            Register as Patient
-          </Button>
-        </Stack>
-      </m.div>
-
-      <Stack spacing={3} sx={{ textAlign: 'center', opacity: 0.48 }}>
-        <m.div variants={varFade().in}>
-          <Typography variant="overline">Available For</Typography>
-        </m.div>
-
-        <Stack spacing={2} direction="row" justifyContent="center">
-          {['figma', 'js', 'ts', 'nextjs'].map((platform) => (
-            <m.div key={platform} variants={varFade().in}>
-              <SvgColor src={`/assets/icons/platforms/ic_${platform}.svg`} />
-            </m.div>
-          ))}
-        </Stack>
-      </Stack>
     </Stack>
   );
+  
 
   const renderSlides = (
     <Stack
@@ -312,7 +249,7 @@ export default function HomeHero() {
           src={
             isLight
               ? `/assets/images/home/hero/Light.png`
-              : `/assets/images/home/hero/dark_1.webp`
+              : `/assets/images/home/hero/Light.png`
           }
           sx={{ position: 'absolute', mt: -5 }}
         />
@@ -324,7 +261,7 @@ export default function HomeHero() {
           src={
             isLight
               ? `/assets/images/home/hero/Light.png`
-              : `/assets/images/home/hero/dark_1.webp`
+              : `/assets/images/home/hero/Light.png`
           }
           sx={{ position: 'absolute' }}
         />
@@ -343,7 +280,7 @@ export default function HomeHero() {
           src={
             isLight
               ? `/assets/images/home/hero/Light.png`
-              : `/assets/images/home/hero/dark_2.webp`
+              : `/assets/images/home/hero/Light.png`
           }
           sx={{ position: 'absolute', mt: -5 }}
         />
@@ -355,7 +292,7 @@ export default function HomeHero() {
           src={
             isLight
               ? `/assets/images/home/hero/Light.png`
-              : `/assets/images/home/hero/dark_2.webp`
+              : `/assets/images/home/hero/Light.png`
           }
           sx={{ position: 'absolute' }}
         />
@@ -392,6 +329,7 @@ export default function HomeHero() {
         <StyledWrapper>
           <Container component={MotionContainer} sx={{ height: 1 }}>
             <Grid container columnSpacing={{ md: 10 }} sx={{ height: 1 }}>
+            
               <Grid xs={12} md={6}>
                 {renderDescription}
               </Grid>

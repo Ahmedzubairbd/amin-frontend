@@ -47,7 +47,7 @@ export default function ContactHero() {
           color: alpha(theme.palette.grey[900], 0.8),
           imgUrl: '/assets/images/contact/hero.jpg',
         }),
-        height: { md: 560 },
+        height: { md: 460 },
         py: { xs: 10, md: 0 },
         overflow: 'hidden',
         position: 'relative',

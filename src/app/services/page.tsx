@@ -8,8 +8,5 @@ export const metadata = {
 };
 
 export default function ServicesPage() {
- return (
-  <ServicesView />
-
- )
+  return <ServicesView />;
 }

@@ -1,9 +1,11 @@
 ## NODE.JS
 
-- Node Version Upgraded:
--v22.11.0
--Try This First :
--nvm use 22
+- Node version used: v22.11.0
+- If you use [nvm](https://github.com/nvm-sh/nvm), run:
+  ```bash
+  nvm install
+  nvm use
+  ```
 
 ## Package Dependancy
 -updated all packages

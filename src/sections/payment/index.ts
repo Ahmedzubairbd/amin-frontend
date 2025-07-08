@@ -1,0 +1,1 @@
+export { default as PaymentNewCardDialog } from './payment-new-card-dialog';

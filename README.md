@@ -9,6 +9,12 @@ nvm install 22
 nvm use 22
 ```
 
+If you use [nvm](https://github.com/nvm-sh/nvm), you can also run:
+```bash
+nvm install
+nvm use
+```
+
 ## Installation
 
 Install dependencies before running the development server:

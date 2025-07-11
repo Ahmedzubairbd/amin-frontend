@@ -1,7 +1,7 @@
 // routes
 import { paths } from 'src/routes/paths';
 // config
-// import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { PATH_AFTER_LOGIN } from 'src/config-global';
 // components
 import Iconify from 'src/components/iconify';
 
@@ -12,11 +12,6 @@ export const navConfig = [
     title: 'Home',
     icon: <Iconify icon="solar:home-2-bold-duotone" />,
     path: '/',
-  },
-  {
-    title: 'Components',
-    icon: <Iconify icon="solar:atom-bold-duotone" />,
-    path: paths.components,
   },
   {
     title: 'Services',
@@ -39,20 +34,9 @@ export const navConfig = [
     path: paths.finddoctor,
   },
   {
-    title: 'Others',
-    path: '/pages',
+    title: 'FAQs',
     icon: <Iconify icon="solar:file-bold-duotone" />,
-    children: [
-      {
-        subheader: 'Other',
-        items: [
-          { title: 'FAQs', path: paths.faqs },
-          { title: 'Pricing', path: paths.pricing },
-          { title: 'Maintenance', path: paths.maintenance },
-          { title: 'Coming Soon', path: paths.comingSoon },
-        ],
-      },
-    ],
+    path: paths.faqs,
   },
 ];
       // {

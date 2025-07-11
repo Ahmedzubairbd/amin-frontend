@@ -11,8 +11,7 @@ type EaseType =
   | 'backIn'
   | 'backOut'
   | 'backInOut'
-  | 'anticipate'
-  | number[];
+  | 'anticipate';
 
 export type VariantsType = {
   distance?: number;

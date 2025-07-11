@@ -10,8 +10,6 @@ import { defaultLang } from './config-lang';
 //
 import translationEn from './langs/en.json';
 import translationBn from './langs/bn.json';
-// import translationVi from './langs/vi.json';
-// import translationCn from './langs/cn.json';
 import translationAr from './langs/ar.json';
 
 // ----------------------------------------------------------------------
@@ -25,8 +23,6 @@ i18n
     resources: {
       en: { translations: translationEn },
       bn: { translations: translationBn },
-      // vi: { translations: translationVi },
-      // cn: { translations: translationCn },
       ar: { translations: translationAr },
     },
     lng,

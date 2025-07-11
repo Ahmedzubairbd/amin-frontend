@@ -1,12 +1,19 @@
-// sections
-import { AboutView } from 'src/sections/about/view';
+import { Suspense } from 'react';
+
+import { LoadingScreen } from 'src/components/loading-screen';
+
+import AboutView from 'src/sections/about/view/about-view';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'About us',
+  title: 'About Us | Amin Diagnostics & Medical Services',
 };
 
 export default function AboutPage() {
-  return <AboutView />;
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <AboutView />
+    </Suspense>
+  );
 }

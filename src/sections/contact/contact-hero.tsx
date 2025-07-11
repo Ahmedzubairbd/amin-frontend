@@ -1,3 +1,5 @@
+'use client';
+
 import { m, MotionProps } from 'framer-motion';
 // @mui
 import Stack from '@mui/material/Stack';

@@ -1,14 +1,16 @@
 'use client';
 
-import { useEffect, useReducer, useCallback, useMemo } from 'react';
+import { createContext, useContext, useEffect, useReducer, useCallback } from 'react';
+// next
+import { useRouter } from 'next/navigation';
+// @types
+import { User } from 'src/types/medical';
 // utils
-import axios, { API_ENDPOINTS } from 'src/utils/axios';
+import axios from 'src/utils/axios';
 //
-import { AuthContext } from './auth-context';
-import { isValidToken, setSession } from './utils';
-import { ActionMapType, AuthStateType, AuthUserType } from '../../types';
+import { JWTContextType } from 'src/auth/types';
+import { AuthContextType, ActionMap, AuthState } from './types';
 
-// ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 
@@ -21,49 +23,57 @@ enum Types {
 
 type Payload = {
   [Types.INITIAL]: {
-    user: AuthUserType;
+    user: User | null;
   };
   [Types.LOGIN]: {
-    user: AuthUserType;
+    user: User;
   };
   [Types.REGISTER]: {
-    user: AuthUserType;
+    user: User;
   };
   [Types.LOGOUT]: undefined;
 };
 
-type ActionsType = ActionMapType<Payload>[keyof ActionMapType<Payload>];
+type Actions = ActionMap<Payload>[keyof ActionMap<Payload>];
 
-// ----------------------------------------------------------------------
-
-const initialState: AuthStateType = {
+const initialState: AuthState = {
   user: null,
   loading: true,
+  authenticated: false,
+  unauthenticated: true,
 };
 
-const reducer = (state: AuthStateType, action: ActionsType) => {
+const reducer = (state: AuthState, action: Actions) => {
   if (action.type === Types.INITIAL) {
     return {
-      loading: false,
       user: action.payload.user,
+      loading: false,
+      authenticated: !!action.payload.user,
+      unauthenticated: !action.payload.user,
     };
   }
   if (action.type === Types.LOGIN) {
     return {
       ...state,
       user: action.payload.user,
+      authenticated: true,
+      unauthenticated: false,
     };
   }
   if (action.type === Types.REGISTER) {
     return {
       ...state,
       user: action.payload.user,
+      authenticated: true,
+      unauthenticated: false,
     };
   }
   if (action.type === Types.LOGOUT) {
     return {
       ...state,
       user: null,
+      authenticated: false,
+      unauthenticated: true,
     };
   }
   return state;
@@ -71,23 +81,35 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
 
 // ----------------------------------------------------------------------
 
-const STORAGE_KEY = 'accessToken';
+export const AuthContext = createContext<AuthContextType | null>(null);
 
-type Props = {
+export const useAuthContext = () => {
+  const context = useContext(AuthContext);
+
+  if (!context) throw new Error('useAuthContext must be used within an AuthProvider');
+
+  return context;
+};
+
+// ----------------------------------------------------------------------
+
+type AuthProviderProps = {
   children: React.ReactNode;
 };
 
-export function AuthProvider({ children }: Props) {
+export function AuthProvider({ children }: AuthProviderProps) {
+  const { push } = useRouter();
+
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const initialize = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(STORAGE_KEY);
+      const accessToken = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
-      if (accessToken && isValidToken(accessToken)) {
-        setSession(accessToken);
+      if (accessToken) {
+        axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
-        const response = await axios.get(API_ENDPOINTS.auth.me);
+        const response = await axios.get('/user/profile');
 
         const { user } = response.data;
 
@@ -121,41 +143,131 @@ export function AuthProvider({ children }: Props) {
   }, [initialize]);
 
   // LOGIN
-  const login = useCallback(async (email: string, password: string) => {
-    const data = {
-      email,
-      password,
-    };
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const response = await axios.post('/auth/login', {
+        email,
+        password,
+      });
 
-    const response = await axios.post(API_ENDPOINTS.auth.login, data);
+      const { accessToken, user } = response.data;
 
-    const { accessToken, user } = response.data;
+      localStorage.setItem('accessToken', accessToken);
 
-    setSession(accessToken);
+      axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
-    dispatch({
-      type: Types.LOGIN,
-      payload: {
-        user,
-      },
+      dispatch({
+        type: Types.LOGIN,
+        payload: {
+          user,
+        },
+      });
+
+      return user;
+    },
+    []
+  );
+
+  // GOOGLE LOGIN
+  const loginWithGoogle = useCallback(
+    async (accessToken: string) => {
+      const response = await axios.post('/auth/google', {
+        accessToken,
+      });
+
+      const { token, user } = response.data;
+
+      localStorage.setItem('accessToken', token);
+
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      dispatch({
+        type: Types.LOGIN,
+        payload: {
+          user,
+        },
+      });
+
+      return user;
+    },
+    []
+  );
+
+  // GITHUB LOGIN
+  const loginWithGithub = useCallback(
+    async (accessToken: string) => {
+      const response = await axios.post('/auth/github', {
+        accessToken,
+      });
+
+      const { token, user } = response.data;
+
+      localStorage.setItem('accessToken', token);
+
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      dispatch({
+        type: Types.LOGIN,
+        payload: {
+          user,
+        },
+      });
+
+      return user;
+    },
+    []
+  );
+
+  // PHONE OTP LOGIN (for patients)
+  const loginWithPhone = useCallback(
+    async (phone: string, otp: string) => {
+      const response = await axios.post('/auth/verify-otp', {
+        phone,
+        otp,
+      });
+
+      const { token, user } = response.data;
+
+      localStorage.setItem('accessToken', token);
+
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      dispatch({
+        type: Types.LOGIN,
+        payload: {
+          user,
+        },
+      });
+
+      return user;
+    },
+    []
+  );
+
+  // SEND OTP
+  const sendOTP = useCallback(async (phone: string) => {
+    const response = await axios.post('/auth/send-otp', {
+      phone,
     });
+
+    return response.data;
   }, []);
 
   // REGISTER
   const register = useCallback(
     async (email: string, password: string, firstName: string, lastName: string) => {
-      const data = {
+      const response = await axios.post('/auth/register', {
         email,
         password,
         firstName,
         lastName,
-      };
-
-      const response = await axios.post(API_ENDPOINTS.auth.register, data);
+      });
 
       const { accessToken, user } = response.data;
 
-      sessionStorage.setItem(STORAGE_KEY, accessToken);
+      localStorage.setItem('accessToken', accessToken);
+
+      axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
       dispatch({
         type: Types.REGISTER,
@@ -163,38 +275,39 @@ export function AuthProvider({ children }: Props) {
           user,
         },
       });
+
+      return user;
     },
     []
   );
 
   // LOGOUT
-  const logout = useCallback(async () => {
-    setSession(null);
+  const logout = useCallback(() => {
+    localStorage.removeItem('accessToken');
+    delete axios.defaults.headers.common.Authorization;
     dispatch({
       type: Types.LOGOUT,
     });
+    push('/auth/login');
+  }, [push]);
+
+  const checkAuthenticated = useCallback(() => {
+    const accessToken = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    return !!accessToken;
   }, []);
 
-  // ----------------------------------------------------------------------
+  const contextValue = {
+    ...state,
+    method: 'jwt' as const,
+    login,
+    loginWithGoogle,
+    loginWithGithub,
+    loginWithPhone,
+    sendOTP,
+    register,
+    logout,
+    checkAuthenticated,
+  };
 
-  const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated';
-
-  const status = state.loading ? 'loading' : checkAuthenticated;
-
-  const memoizedValue = useMemo(
-    () => ({
-      user: state.user,
-      method: 'jwt',
-      loading: status === 'loading',
-      authenticated: status === 'authenticated',
-      unauthenticated: status === 'unauthenticated',
-      //
-      login,
-      register,
-      logout,
-    }),
-    [login, logout, register, state.user, status]
-  );
-
-  return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 }

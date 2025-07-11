@@ -1,14 +1,15 @@
+'use client';
 import { m } from 'framer-motion';
 // @mui
 import { Theme, SxProps } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+import { useAuthContext } from 'src/auth/hooks';
 // assets
 import { ForbiddenIllustration } from 'src/assets/illustrations';
 // components
-import { MotionContainer, varBounce } from 'src/components/animate';
+import { MotionContainer, varBounce, varFade } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +22,7 @@ type RoleBasedGuardProp = {
 
 export default function RoleBasedGuard({ hasContent, roles, children, sx }: RoleBasedGuardProp) {
   // Logic here to get current user role
-  const { user } = useMockedUser();
+  const { user } = useAuthContext();
 
   // const currentRole = 'user';
   const currentRole = user?.role; // admin;
@@ -29,19 +30,19 @@ export default function RoleBasedGuard({ hasContent, roles, children, sx }: Role
   if (typeof roles !== 'undefined' && !roles.includes(currentRole)) {
     return hasContent ? (
       <Container component={MotionContainer} sx={{ textAlign: 'center', ...sx }}>
-        <m.div variants={varBounce().in}>
+        <m.div variants={varFade().inUp}>
           <Typography variant="h3" paragraph>
             Permission Denied
           </Typography>
         </m.div>
 
-        <m.div variants={varBounce().in}>
+        <m.div variants={varFade().inUp}>
           <Typography sx={{ color: 'text.secondary' }}>
             You do not have permission to access this page
           </Typography>
         </m.div>
 
-        <m.div variants={varBounce().in}>
+        <m.div variants={varFade().inUp}>
           <ForbiddenIllustration
             sx={{
               height: 260,

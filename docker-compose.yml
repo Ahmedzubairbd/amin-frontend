@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: amin_postgres
+    environment:
+      POSTGRES_DB: amin_diagnostics
+      POSTGRES_USER: amin_user
+      POSTGRES_PASSWORD: amin_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - amin_network
+    restart: unless-stopped
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: amin_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - amin_network
+    restart: unless-stopped
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: amin_backend
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://amin_user:amin_password@postgres:5432/amin_diagnostics
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=Y4UtUruUf8BzgmEGV3s16INMXl2bb9us/Oyu65SAyaA=
+      - JWT_EXPIRES_IN=15m
+      - JWT_REFRESH_EXPIRES_IN=7d
+      - SONALI_SMS_API_KEY=${SONALI_SMS_API_KEY}
+      - SONALI_SMS_SECRET_KEY=${SONALI_SMS_SECRET_KEY}
+      - SONALI_SMS_SENDER_ID=AMINDIAG
+      - SONALI_SMS_BASE_URL=http://api.sonalisms.com:7788
+      - SONALI_SMS_ALTERNATE_URL=http://103.177.125.106:7788
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - UPLOAD_MAX_SIZE=10485760
+      - ALLOWED_FILE_TYPES=image/jpeg,image/png,image/gif,application/pdf,text/plain
+      - CORS_ORIGIN=http://localhost:3000
+      - PORT=8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - uploads_data:/app/uploads
+    networks:
+      - amin_network
+    restart: unless-stopped
+
+  # Socket.IO Server for real-time features
+  socket-server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.socket
+    container_name: amin_socket
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://amin_user:amin_password@postgres:5432/amin_diagnostics
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=Y4UtUruUf8BzgmEGV3s16INMXl2bb9us/Oyu65SAyaA= 
+      - SOCKET_IO_SECRET=Y4UtUruUf8BzgmEGV3s16INMXl2bb9us/Oyu65SAyaA=
+      - CORS_ORIGIN=http://localhost:3000
+      - PORT=3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - amin_network
+    restart: unless-stopped
+
+  # pgAdmin for database management (optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: amin_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@amindiagnostics.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - amin_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  uploads_data:
+    driver: local
+
+networks:
+  amin_network:
+    driver: bridge 

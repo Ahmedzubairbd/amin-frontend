@@ -1,3 +1,4 @@
+'use client';
 import { m } from 'framer-motion';
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -48,7 +49,7 @@ export default function HomeAdvertisement() {
             variant="contained"
             target="_blank"
             rel="noopener"
-            href={paths.authDemo.modern.register}
+            href={paths.auth.jwt.login}
             sx={{
               color: 'grey.800',
               bgcolor: 'common.white',

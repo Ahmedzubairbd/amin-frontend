@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { m, MotionProps } from "framer-motion";
 // @mui

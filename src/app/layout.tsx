@@ -12,9 +12,6 @@ import 'yet-another-react-lightbox/plugins/thumbnails.css';
 // map
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-// editor
-import 'react-quill/dist/quill.snow.css';
-
 // slick-carousel
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -38,18 +35,16 @@ import SnackbarProvider from 'src/components/snackbar/snackbar-provider';
 import { SettingsProvider } from 'src/components/settings';
 // auth
 import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
-// import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
-// import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
-// import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';
+// query
+import QueryProvider from 'src/providers/query-provider';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
   title: 'Amin Diagnostics & Medical Services',
   description:
-    'One Digital Solution in Medical Services',
-  keywords: 'medical,amin,amindiagnostics,application,patient,kushtia,hospital',
-  themeColor: '#000000',
+    'Comprehensive medical diagnostics and healthcare services. Book appointments, view test reports, and manage your health with our advanced medical platform.',
+  keywords: 'medical,diagnostics,healthcare,appointments,test reports,doctors,patients,amin diagnostics,medical services,hospital',
   manifest: '/manifest.json',
   icons: [
     {
@@ -76,6 +71,10 @@ export const metadata = {
   ],
 };
 
+export const viewport = {
+  themeColor: '#00AB55',
+};
+
 type Props = {
   children: React.ReactNode;
 };
@@ -98,12 +97,14 @@ export default function RootLayout({ children }: Props) {
                 }}
               >
                 <ThemeProvider>
-                  <MotionLazy>
-                    <SnackbarProvider>
-                      <ProgressBar />
-                      <AuthConsumer>{children}</AuthConsumer>
-                    </SnackbarProvider>
-                  </MotionLazy>
+                  <QueryProvider>
+                    <MotionLazy>
+                      <SnackbarProvider>
+                        <ProgressBar />
+                        <AuthConsumer>{children}</AuthConsumer>
+                      </SnackbarProvider>
+                    </MotionLazy>
+                  </QueryProvider>
                 </ThemeProvider>
               </SettingsProvider>
             </LocalizationProvider>

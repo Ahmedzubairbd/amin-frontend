@@ -23,25 +23,25 @@ const METHODS = [
   {
     id: 'jwt',
     label: 'Jwt',
-    path: paths.authDemo.classic.login,
+    path: paths.auth.jwt.login,
     icon: '/assets/icons/auth/ic_jwt.svg',
   },
   {
     id: 'firebase',
     label: 'Firebase',
-    path: paths.authDemo.classic.login,
+    path: paths.auth.jwt.login,
     icon: '/assets/icons/auth/ic_firebase.svg',
   },
   {
     id: 'amplify',
     label: 'Amplify',
-    path: paths.authDemo.classic.login,
+    path: paths.auth.jwt.login,
     icon: '/assets/icons/auth/ic_amplify.svg',
   },
   {
     id: 'auth0',
     label: 'Auth0',
-    path: paths.authDemo.classic.login,
+    path: paths.auth.jwt.login,
     icon: '/assets/icons/auth/ic_auth0.svg',
   },
 ];

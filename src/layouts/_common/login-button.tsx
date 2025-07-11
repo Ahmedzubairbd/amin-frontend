@@ -10,8 +10,8 @@ import { useAuthContext } from 'src/auth/hooks';
 // ----------------------------------------------------------------------
 
 const loginPaths: Record<string, string> = {
-  jwt: paths.authDemo.classic.login,  // paths.auth.jwt.login,
-  auth0: paths.authDemo.classic.login, //// paths.auth.auth0.login,
+  jwt: paths.auth.jwt.login,
+  // auth0: paths.auth.auth0.login,
 };
 
 type Props = {

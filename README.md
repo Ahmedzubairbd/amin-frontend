@@ -1,48 +1,44 @@
-# Amin Diagnostics Frontend
+# Amin Diagnostics & Medical Services
 
-## Node.js
+This project is a modern, full-featured medical diagnostics and healthcare CMS built with Next.js, React, and MUI. It includes:
 
-This project requires **Node.js v22.11.0**. It is recommended to use [nvm](https://github.com/nvm-sh/nvm) for managing Node versions:
+- Public pages: Home, About Us, Services, Doctors, Contact Us, Book Appointment, FAQs, Find Doctor
+- Patient, Doctor, and Admin dashboards
+- Phone/SMS OTP authentication, Google/GitHub OAuth
+- Real-time features, file upload, and PostgreSQL backend
 
-```bash
-nvm install 22
-nvm use 22
-```
+## Main Routes
 
-If you use [nvm](https://github.com/nvm-sh/nvm), you can also run:
-```bash
-nvm install
-nvm use
-```
+- `/` — Home
+- `/about-us` — About Us
+- `/services` — Services
+- `/doctors` — Doctors
+- `/contact-us` — Contact Us
+- `/book-appointment` — Book Appointment
+- `/faqs` — FAQs
+- `/find-doctor` — Find Doctor
+- `/dashboard` — Dashboard (role-based)
 
-## Installation
+## Navigation
 
-Install dependencies before running the development server:
+All navigation and links use the `paths` constants from `src/routes/paths.ts` and the `RouterLink` component for client-side routing.
 
-```bash
-yarn install    # or npm install
-```
+## Adding New Pages
 
-Start the dev server with:
+1. Create a new folder in `src/app/` with a `page.tsx` file for your route.
+2. Add your view/component in `src/sections/` if needed.
+3. Update `src/routes/paths.ts` and navigation config if you want it in the main menu.
 
-```bash
-yarn dev        # or npm run dev
-```
+## Development
 
-## Environment Variables
+- Run `npm install` to install dependencies
+- Run `npm run dev` to start the development server
 
-Configuration is done via `.env` files. Create a `.env.local` file in the project root containing the following variables:
+## Backend
 
-```env
-NEXT_PUBLIC_HOST_API=<backend-api-url>
-NEXT_PUBLIC_ASSETS_API=<assets-url>
-NEXT_PUBLIC_MAPBOX_API=<mapbox-token>
-```
+See `BACKEND_INTEGRATION_GUIDE.md` for backend setup and integration.
 
-`.env.local` values override those from `.env` and other environment files.
+---
 
-## Package Dependancy
-- updated all packages
-- fix all legacy-peer-options.
-- fix eslint , postcss , next.config.js & tsconfig.json
+For any issues, please open an issue or contact support@amin.com
 

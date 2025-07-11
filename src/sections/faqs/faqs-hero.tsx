@@ -1,3 +1,4 @@
+'use client';
 import { m, MotionProps } from 'framer-motion';
 // @mui
 import { alpha, useTheme } from '@mui/material/styles';

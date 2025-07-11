@@ -1,571 +1,466 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  userApi,
-  orderApi,
-  productApi,
-  invoiceApi,
-  jobApi,
-  tourApi,
-  fileApi,
-  overviewApi,
-} from 'src/services/api';
-import {
-  User,
-  UserAbout,
-  UserFollower,
-  UserFriend,
-  UserGallery,
-  UserFeed,
-  UserCard,
-  UserPayment,
-  UserAddress,
-  UserInvoice,
-  UserPlan,
-  Order,
-  Product,
-  Invoice,
-  Job,
-  Tour,
-  FileItem,
-  OverviewAnalytics,
-  OverviewChart,
-  UserFilters,
-  OrderFilters,
-  ProductFilters,
-  PaginationParams,
-} from 'src/types/api';
+import { databaseService } from '../services/database-service';
+import { smsService } from '../services/sms-service';
+import { oauthService } from '../services/oauth-service';
+import { fileUploadService } from '../services/file-upload-service';
+import { useSnackbar } from 'notistack';
 
-// User Hooks
-export const useUsers = (filters?: UserFilters) => {
+// ----------------------------------------------------------------------
+
+// =============================================================================
+// USER MANAGEMENT HOOKS
+// =============================================================================
+
+export const useUsers = (params?: any) => {
   return useQuery({
-    queryKey: ['users', filters],
-    queryFn: () => userApi.getUsers(filters),
+    queryKey: ['users', params],
+    queryFn: () => databaseService.getUsers(params),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
-export const useUser = (id: string) => {
+export const useUser = (userId: string) => {
   return useQuery({
-    queryKey: ['user', id],
-    queryFn: () => userApi.getUserById(id),
-    enabled: !!id,
+    queryKey: ['user', userId],
+    queryFn: () => databaseService.getUserById(userId),
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
   });
 };
 
-export const useUserAbout = (id: string) => {
-  return useQuery({
-    queryKey: ['user-about', id],
-    queryFn: () => userApi.getUserAbout(id),
-    enabled: !!id,
-  });
-};
-
-export const useUserFollowers = (id: string) => {
-  return useQuery({
-    queryKey: ['user-followers', id],
-    queryFn: () => userApi.getUserFollowers(id),
-    enabled: !!id,
-  });
-};
-
-export const useUserFriends = (id: string) => {
-  return useQuery({
-    queryKey: ['user-friends', id],
-    queryFn: () => userApi.getUserFriends(id),
-    enabled: !!id,
-  });
-};
-
-export const useUserGallery = (id: string) => {
-  return useQuery({
-    queryKey: ['user-gallery', id],
-    queryFn: () => userApi.getUserGallery(id),
-    enabled: !!id,
-  });
-};
-
-export const useUserFeeds = (id: string) => {
-  return useQuery({
-    queryKey: ['user-feeds', id],
-    queryFn: () => userApi.getUserFeeds(id),
-    enabled: !!id,
-  });
-};
-
-export const useUserCards = () => {
-  return useQuery({
-    queryKey: ['user-cards'],
-    queryFn: () => userApi.getUserCards(),
-  });
-};
-
-export const useUserPayments = (id: string) => {
-  return useQuery({
-    queryKey: ['user-payments', id],
-    queryFn: () => userApi.getUserPayments(id),
-    enabled: !!id,
-  });
-};
-
-export const useUserAddresses = (id: string) => {
-  return useQuery({
-    queryKey: ['user-addresses', id],
-    queryFn: () => userApi.getUserAddresses(id),
-    enabled: !!id,
-  });
-};
-
-export const useUserInvoices = (id: string) => {
-  return useQuery({
-    queryKey: ['user-invoices', id],
-    queryFn: () => userApi.getUserInvoices(id),
-    enabled: !!id,
-  });
-};
-
-export const useUserPlans = () => {
-  return useQuery({
-    queryKey: ['user-plans'],
-    queryFn: () => userApi.getUserPlans(),
-  });
-};
-
-export const useUserStatusOptions = () => {
-  return useQuery({
-    queryKey: ['user-status-options'],
-    queryFn: () => userApi.getUserStatusOptions(),
-  });
-};
-
-// User Mutations
 export const useCreateUser = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: (userData: Partial<User>) => userApi.createUser(userData),
+    mutationFn: (userData: any) => databaseService.createUser(userData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      enqueueSnackbar('User created successfully', { variant: 'success' });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to create user', { variant: 'error' });
     },
   });
 };
 
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: ({ id, userData }: { id: string; userData: Partial<User> }) =>
-      userApi.updateUser(id, userData),
-    onSuccess: (_, { id }) => {
+    mutationFn: ({ userId, userData }: { userId: string; userData: any }) =>
+      databaseService.updateUser(userId, userData),
+    onSuccess: (_, { userId }) => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      queryClient.invalidateQueries({ queryKey: ['user', id] });
+      queryClient.invalidateQueries({ queryKey: ['user', userId] });
+      enqueueSnackbar('User updated successfully', { variant: 'success' });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to update user', { variant: 'error' });
     },
   });
 };
 
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: (id: string) => userApi.deleteUser(id),
+    mutationFn: (userId: string) => databaseService.deleteUser(userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      enqueueSnackbar('User deleted successfully', { variant: 'success' });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to delete user', { variant: 'error' });
     },
   });
 };
 
-// Order Hooks
-export const useOrders = (filters?: OrderFilters) => {
+// =============================================================================
+// DOCTOR MANAGEMENT HOOKS
+// =============================================================================
+
+export const useDoctors = (params?: any) => {
   return useQuery({
-    queryKey: ['orders', filters],
-    queryFn: () => orderApi.getOrders(filters),
+    queryKey: ['doctors', params],
+    queryFn: () => databaseService.getDoctors(params),
+    staleTime: 5 * 60 * 1000,
   });
 };
 
-export const useOrder = (id: string) => {
+export const useDoctor = (doctorId: string) => {
   return useQuery({
-    queryKey: ['order', id],
-    queryFn: () => orderApi.getOrderById(id),
-    enabled: !!id,
+    queryKey: ['doctor', doctorId],
+    queryFn: () => databaseService.getDoctorById(doctorId),
+    enabled: !!doctorId,
+    staleTime: 5 * 60 * 1000,
   });
 };
 
-export const useOrderStatusOptions = () => {
-  return useQuery({
-    queryKey: ['order-status-options'],
-    queryFn: () => orderApi.getOrderStatusOptions(),
-  });
-};
-
-// Order Mutations
-export const useCreateOrder = () => {
+export const useCreateDoctor = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: (orderData: Partial<Order>) => orderApi.createOrder(orderData),
+    mutationFn: (doctorData: any) => databaseService.createDoctor(doctorData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['doctors'] });
+      enqueueSnackbar('Doctor created successfully', { variant: 'success' });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to create doctor', { variant: 'error' });
     },
   });
 };
 
-export const useUpdateOrder = () => {
+export const useUpdateDoctor = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: ({ id, orderData }: { id: string; orderData: Partial<Order> }) =>
-      orderApi.updateOrder(id, orderData),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
-      queryClient.invalidateQueries({ queryKey: ['order', id] });
+    mutationFn: ({ doctorId, doctorData }: { doctorId: string; doctorData: any }) =>
+      databaseService.updateDoctor(doctorId, doctorData),
+    onSuccess: (_, { doctorId }) => {
+      queryClient.invalidateQueries({ queryKey: ['doctors'] });
+      queryClient.invalidateQueries({ queryKey: ['doctor', doctorId] });
+      enqueueSnackbar('Doctor updated successfully', { variant: 'success' });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to update doctor', { variant: 'error' });
     },
   });
 };
 
-export const useUpdateOrderStatus = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: Order['status'] }) =>
-      orderApi.updateOrderStatus(id, status),
-    onSuccess: (_: any, { id }: { id: string }) => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
-      queryClient.invalidateQueries({ queryKey: ['order', id] });
-    },
+// =============================================================================
+// PATIENT MANAGEMENT HOOKS
+// =============================================================================
+
+export const usePatients = (params?: any) => {
+  return useQuery({
+    queryKey: ['patients', params],
+    queryFn: () => databaseService.getPatients(params),
+    staleTime: 5 * 60 * 1000,
   });
 };
 
-export const useDeleteOrder = () => {
+export const usePatient = (patientId: string) => {
+  return useQuery({
+    queryKey: ['patient', patientId],
+    queryFn: () => databaseService.getPatientById(patientId),
+    enabled: !!patientId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useCreatePatient = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: (id: string) => orderApi.deleteOrder(id),
+    mutationFn: (patientData: any) => databaseService.createPatient(patientData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['patients'] });
+      enqueueSnackbar('Patient created successfully', { variant: 'success' });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to create patient', { variant: 'error' });
     },
   });
 };
 
-// Product Hooks
-export const useProducts = (filters?: ProductFilters) => {
-  return useQuery({
-    queryKey: ['products', filters],
-    queryFn: () => productApi.getProducts(filters),
-  });
-};
-
-export const useProduct = (id: string) => {
-  return useQuery({
-    queryKey: ['product', id],
-    queryFn: () => productApi.getProductById(id),
-    enabled: !!id,
-  });
-};
-
-export const useProductCategories = () => {
-  return useQuery({
-    queryKey: ['product-categories'],
-    queryFn: () => productApi.getProductCategories(),
-  });
-};
-
-export const useSearchProducts = (query: string) => {
-  return useQuery({
-    queryKey: ['product-search', query],
-    queryFn: () => productApi.searchProducts(query),
-    enabled: !!query,
-  });
-};
-
-// Product Mutations
-export const useCreateProduct = () => {
+export const useUpdatePatient = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: (productData: Partial<Product>) => productApi.createProduct(productData),
+    mutationFn: ({ patientId, patientData }: { patientId: string; patientData: any }) =>
+      databaseService.updatePatient(patientId, patientData),
+    onSuccess: (_, { patientId }) => {
+      queryClient.invalidateQueries({ queryKey: ['patients'] });
+      queryClient.invalidateQueries({ queryKey: ['patient', patientId] });
+      enqueueSnackbar('Patient updated successfully', { variant: 'success' });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to update patient', { variant: 'error' });
+    },
+  });
+};
+
+// =============================================================================
+// APPOINTMENT MANAGEMENT HOOKS
+// =============================================================================
+
+export const useAppointments = (params?: any) => {
+  return useQuery({
+    queryKey: ['appointments', params],
+    queryFn: () => databaseService.getAppointments(params),
+    staleTime: 2 * 60 * 1000, // 2 minutes for appointments
+  });
+};
+
+export const useAppointment = (appointmentId: string) => {
+  return useQuery({
+    queryKey: ['appointment', appointmentId],
+    queryFn: () => databaseService.getAppointmentById(appointmentId),
+    enabled: !!appointmentId,
+    staleTime: 2 * 60 * 1000,
+  });
+};
+
+export const useCreateAppointment = () => {
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return useMutation({
+    mutationFn: (appointmentData: any) => databaseService.createAppointment(appointmentData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      enqueueSnackbar('Appointment created successfully', { variant: 'success' });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to create appointment', { variant: 'error' });
     },
   });
 };
 
-export const useUpdateProduct = () => {
+export const useUpdateAppointment = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: ({ id, productData }: { id: string; productData: Partial<Product> }) =>
-      productApi.updateProduct(id, productData),
-    onSuccess: (_: any, { id }: { id: string }) => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['product', id] });
+    mutationFn: ({ appointmentId, appointmentData }: { appointmentId: string; appointmentData: any }) =>
+      databaseService.updateAppointment(appointmentId, appointmentData),
+    onSuccess: (_, { appointmentId }) => {
+      queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      queryClient.invalidateQueries({ queryKey: ['appointment', appointmentId] });
+      enqueueSnackbar('Appointment updated successfully', { variant: 'success' });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to update appointment', { variant: 'error' });
     },
   });
 };
 
-export const useDeleteProduct = () => {
+// =============================================================================
+// MEDICAL TESTS HOOKS
+// =============================================================================
+
+export const useMedicalTests = (params?: any) => {
+  return useQuery({
+    queryKey: ['medical-tests', params],
+    queryFn: () => databaseService.getMedicalTests(params),
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useMedicalTest = (testId: string) => {
+  return useQuery({
+    queryKey: ['medical-test', testId],
+    queryFn: () => databaseService.getMedicalTestById(testId),
+    enabled: !!testId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useCreateMedicalTest = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: (id: string) => productApi.deleteProduct(id),
+    mutationFn: (testData: any) => databaseService.createMedicalTest(testData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['medical-tests'] });
+      enqueueSnackbar('Medical test created successfully', { variant: 'success' });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to create medical test', { variant: 'error' });
     },
   });
 };
 
-// Invoice Hooks
-export const useInvoices = (params?: PaginationParams) => {
-  return useQuery({
-    queryKey: ['invoices', params],
-    queryFn: () => invoiceApi.getInvoices(params),
-  });
-};
-
-export const useInvoice = (id: string) => {
-  return useQuery({
-    queryKey: ['invoice', id],
-    queryFn: () => invoiceApi.getInvoiceById(id),
-    enabled: !!id,
-  });
-};
-
-export const useInvoiceStatusOptions = () => {
-  return useQuery({
-    queryKey: ['invoice-status-options'],
-    queryFn: () => invoiceApi.getInvoiceStatusOptions(),
-  });
-};
-
-// Invoice Mutations
-export const useCreateInvoice = () => {
+export const useUpdateMedicalTest = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: (invoiceData: Partial<Invoice>) => invoiceApi.createInvoice(invoiceData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+    mutationFn: ({ testId, testData }: { testId: string; testData: any }) =>
+      databaseService.updateMedicalTest(testId, testData),
+    onSuccess: (_, { testId }) => {
+      queryClient.invalidateQueries({ queryKey: ['medical-tests'] });
+      queryClient.invalidateQueries({ queryKey: ['medical-test', testId] });
+      enqueueSnackbar('Medical test updated successfully', { variant: 'success' });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to update medical test', { variant: 'error' });
     },
   });
 };
 
-export const useUpdateInvoice = () => {
-  const queryClient = useQueryClient();
-  
+// =============================================================================
+// SMS OTP HOOKS
+// =============================================================================
+
+export const useSendOTP = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: ({ id, invoiceData }: { id: string; invoiceData: Partial<Invoice> }) =>
-      invoiceApi.updateInvoice(id, invoiceData),
-    onSuccess: (_: any, { id }: { id: string }) => {
-      queryClient.invalidateQueries({ queryKey: ['invoices'] });
-      queryClient.invalidateQueries({ queryKey: ['invoice', id] });
+    mutationFn: (phoneNumber: string) => smsService.sendOTP(phoneNumber),
+    onSuccess: (result) => {
+      if (result.success) {
+        enqueueSnackbar('OTP sent successfully', { variant: 'success' });
+      } else {
+        enqueueSnackbar(result.error || 'Failed to send OTP', { variant: 'error' });
+      }
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to send OTP', { variant: 'error' });
     },
   });
 };
 
-export const useDeleteInvoice = () => {
-  const queryClient = useQueryClient();
-  
+export const useVerifyOTP = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: (id: string) => invoiceApi.deleteInvoice(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+    mutationFn: ({ phoneNumber, otp }: { phoneNumber: string; otp: string }) =>
+      smsService.verifyOTP(phoneNumber, otp),
+    onSuccess: (isValid) => {
+      if (isValid) {
+        enqueueSnackbar('OTP verified successfully', { variant: 'success' });
+      } else {
+        enqueueSnackbar('Invalid OTP', { variant: 'error' });
+      }
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to verify OTP', { variant: 'error' });
     },
   });
 };
 
-// Job Hooks
-export const useJobs = (params?: PaginationParams) => {
-  return useQuery({
-    queryKey: ['jobs', params],
-    queryFn: () => jobApi.getJobs(params),
-  });
-};
+// =============================================================================
+// FILE UPLOAD HOOKS
+// =============================================================================
 
-export const useJob = (id: string) => {
-  return useQuery({
-    queryKey: ['job', id],
-    queryFn: () => jobApi.getJobById(id),
-    enabled: !!id,
-  });
-};
-
-export const useSearchJobs = (query: string) => {
-  return useQuery({
-    queryKey: ['job-search', query],
-    queryFn: () => jobApi.searchJobs(query),
-    enabled: !!query,
-  });
-};
-
-// Job Mutations
-export const useCreateJob = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (jobData: Partial<Job>) => jobApi.createJob(jobData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
-    },
-  });
-};
-
-export const useUpdateJob = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ id, jobData }: { id: string; jobData: Partial<Job> }) =>
-      jobApi.updateJob(id, jobData),
-    onSuccess: (_: any, { id }: { id: string }) => {
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
-      queryClient.invalidateQueries({ queryKey: ['job', id] });
-    },
-  });
-};
-
-export const useDeleteJob = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (id: string) => jobApi.deleteJob(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
-    },
-  });
-};
-
-// Tour Hooks
-export const useTours = (params?: PaginationParams) => {
-  return useQuery({
-    queryKey: ['tours', params],
-    queryFn: () => tourApi.getTours(params),
-  });
-};
-
-export const useTour = (id: string) => {
-  return useQuery({
-    queryKey: ['tour', id],
-    queryFn: () => tourApi.getTourById(id),
-    enabled: !!id,
-  });
-};
-
-export const useSearchTours = (query: string) => {
-  return useQuery({
-    queryKey: ['tour-search', query],
-    queryFn: () => tourApi.searchTours(query),
-    enabled: !!query,
-  });
-};
-
-// Tour Mutations
-export const useCreateTour = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (tourData: Partial<Tour>) => tourApi.createTour(tourData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tours'] });
-    },
-  });
-};
-
-export const useUpdateTour = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ id, tourData }: { id: string; tourData: Partial<Tour> }) =>
-      tourApi.updateTour(id, tourData),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['tours'] });
-      queryClient.invalidateQueries({ queryKey: ['tour', id] });
-    },
-  });
-};
-
-export const useDeleteTour = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (id: string) => tourApi.deleteTour(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tours'] });
-    },
-  });
-};
-
-// File Hooks
-export const useFiles = (params?: PaginationParams) => {
-  return useQuery({
-    queryKey: ['files', params],
-    queryFn: () => fileApi.getFiles(params),
-  });
-};
-
-export const useFile = (id: string) => {
-  return useQuery({
-    queryKey: ['file', id],
-    queryFn: () => fileApi.getFileById(id),
-    enabled: !!id,
-  });
-};
-
-// File Mutations
 export const useUploadFile = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: (file: File) => fileApi.uploadFile(file),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['files'] });
+    mutationFn: ({ file, type, metadata }: { file: File; type: string; metadata?: any }) =>
+      fileUploadService.uploadFile(file, type as any, metadata),
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ['files'] });
+        enqueueSnackbar('File uploaded successfully', { variant: 'success' });
+      } else {
+        enqueueSnackbar(result.error || 'Failed to upload file', { variant: 'error' });
+      }
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to upload file', { variant: 'error' });
     },
   });
 };
 
 export const useDeleteFile = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: (id: string) => fileApi.deleteFile(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['files'] });
+    mutationFn: (fileId: string) => fileUploadService.deleteFile(fileId),
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ['files'] });
+        enqueueSnackbar('File deleted successfully', { variant: 'success' });
+      } else {
+        enqueueSnackbar(result.error || 'Failed to delete file', { variant: 'error' });
+      }
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to delete file', { variant: 'error' });
     },
   });
 };
 
-export const useToggleFileFavorite = () => {
+// =============================================================================
+// NOTIFICATION HOOKS
+// =============================================================================
+
+export const useNotifications = (userId: string, params?: any) => {
+  return useQuery({
+    queryKey: ['notifications', userId, params],
+    queryFn: () => databaseService.getNotifications(userId, params),
+    enabled: !!userId,
+    staleTime: 1 * 60 * 1000, // 1 minute for notifications
+  });
+};
+
+export const useMarkNotificationAsRead = () => {
   const queryClient = useQueryClient();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   return useMutation({
-    mutationFn: (id: string) => fileApi.toggleFileFavorite(id),
-    onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: ['files'] });
-      queryClient.invalidateQueries({ queryKey: ['file', id] });
+    mutationFn: (notificationId: string) => databaseService.markNotificationAsRead(notificationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+    onError: (error: any) => {
+      enqueueSnackbar(error.message || 'Failed to mark notification as read', { variant: 'error' });
     },
   });
 };
 
-// Overview Hooks
-export const useAnalytics = () => {
+// =============================================================================
+// DASHBOARD HOOKS
+// =============================================================================
+
+export const useDashboardStats = (userId: string, role: string) => {
   return useQuery({
-    queryKey: ['analytics'],
-    queryFn: () => overviewApi.getAnalytics(),
+    queryKey: ['dashboard-stats', userId, role],
+    queryFn: () => databaseService.getDashboardStats(userId, role),
+    enabled: !!userId && !!role,
+    staleTime: 2 * 60 * 1000,
   });
 };
 
-export const useRevenueChart = () => {
+export const useRecentActivity = (userId: string, limit: number = 10) => {
   return useQuery({
-    queryKey: ['revenue-chart'],
-    queryFn: () => overviewApi.getRevenueChart(),
+    queryKey: ['recent-activity', userId, limit],
+    queryFn: () => databaseService.getRecentActivity(userId, limit),
+    enabled: !!userId,
+    staleTime: 2 * 60 * 1000,
   });
 };
 
-export const useSalesChart = () => {
+// =============================================================================
+// SEARCH HOOKS
+// =============================================================================
+
+export const useSearchDoctors = (query: string, params?: any) => {
   return useQuery({
-    queryKey: ['sales-chart'],
-    queryFn: () => overviewApi.getSalesChart(),
+    queryKey: ['search-doctors', query, params],
+    queryFn: () => databaseService.searchDoctors(query, params),
+    enabled: !!query && query.length >= 2,
+    staleTime: 5 * 60 * 1000,
   });
 };
 
-export const useOrdersChart = () => {
+export const useSearchPatients = (query: string, params?: any) => {
   return useQuery({
-    queryKey: ['orders-chart'],
-    queryFn: () => overviewApi.getOrdersChart(),
+    queryKey: ['search-patients', query, params],
+    queryFn: () => databaseService.searchPatients(query, params),
+    enabled: !!query && query.length >= 2,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useSearchAppointments = (query: string, params?: any) => {
+  return useQuery({
+    queryKey: ['search-appointments', query, params],
+    queryFn: () => databaseService.searchAppointments(query, params),
+    enabled: !!query && query.length >= 2,
+    staleTime: 2 * 60 * 1000,
   });
 }; 

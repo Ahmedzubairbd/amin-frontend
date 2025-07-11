@@ -1,3 +1,4 @@
+'use client';
 import { m } from 'framer-motion';
 // @mui
 import { alpha } from '@mui/material/styles';
@@ -8,8 +9,6 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-// _mock
-import { _carouselsMembers, _socials } from 'src/_mock';
 // components
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
@@ -74,13 +73,13 @@ export default function AboutTeam() {
           leftButtonProps={{
             sx: {
               left: 24,
-              ...(_carouselsMembers.length < 5 && { display: 'none' }),
+              ...(false && { display: 'none' }),
             },
           }}
           rightButtonProps={{
             sx: {
               right: 24,
-              ...(_carouselsMembers.length < 5 && { display: 'none' }),
+              ...(false && { display: 'none' }),
             },
           }}
         >
@@ -142,7 +141,7 @@ function MemberCard({ member }: MemberCardProps) {
       </Box>
 
       <Stack direction="row" alignItems="center" justifyContent="center" sx={{ p: 2 }}>
-        {_socials.map((social) => (
+        {/* _socials.map((social) => (
           <IconButton
             key={social.name}
             sx={{
@@ -154,7 +153,7 @@ function MemberCard({ member }: MemberCardProps) {
           >
             <Iconify icon={social.icon} />
           </IconButton>
-        ))}
+        ))} */}
       </Stack>
     </Card>
   );

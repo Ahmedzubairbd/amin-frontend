@@ -12,8 +12,6 @@ import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { usePathname } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
-// _mock
-import { _socials } from 'src/_mock';
 // components
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
@@ -32,13 +30,14 @@ const LINKS = [
   {
     headline: 'Legal',
     children: [
-      { name: 'Terms and Condition', href: '#' },
-      { name: 'Privacy Policy', href: '#' },
+      // Remove or comment out until implemented
     ],
   },
   {
     headline: 'Contact',
-    children: [{ name: 'support@amin.com', href: '#' }],
+    children: [
+      { name: 'support@amin.com', href: 'mailto:support@amin.com' },
+    ],
   },
 ];
 
@@ -116,18 +115,38 @@ export default function Footer() {
                 mb: { xs: 5, md: 0 },
               }}
             >
-              {_socials.map((social) => (
+              {/* _socials.map((social) => ( */}
                 <IconButton
-                  key={social.name}
+                  key="facebook"
                   sx={{
                     '&:hover': {
-                      bgcolor: alpha(social.color, 0.08),
+                      bgcolor: alpha('info.main', 0.08),
                     },
                   }}
                 >
-                  <Iconify color={social.color} icon={social.icon} />
+                  <Iconify color="info.main" icon="eva:facebook-fill" />
                 </IconButton>
-              ))}
+                <IconButton
+                  key="twitter"
+                  sx={{
+                    '&:hover': {
+                      bgcolor: alpha('info.main', 0.08),
+                    },
+                  }}
+                >
+                  <Iconify color="info.main" icon="eva:twitter-fill" />
+                </IconButton>
+                <IconButton
+                  key="instagram"
+                  sx={{
+                    '&:hover': {
+                      bgcolor: alpha('info.main', 0.08),
+                    },
+                  }}
+                >
+                  <Iconify color="info.main" icon="eva:instagram-fill" />
+                </IconButton>
+              {/* ))} */}
             </Stack>
           </Grid>
 

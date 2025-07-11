@@ -88,7 +88,7 @@ export default function Header() {
           {mdUp && <NavDesktop offsetTop={offsetTop} data={navConfig} />}
 
           <Stack alignItems="center" direction={{ xs: 'row', md: 'row-reverse' }}>
-            <Button variant="soft" target="_blank" rel="noopener" href="/auth-demo/modern/login">
+            <Button variant="soft" target="_blank" rel="noopener" href="/auth/jwt/login">
               Patient Portal
             </Button>
 

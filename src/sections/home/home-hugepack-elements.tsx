@@ -1,3 +1,4 @@
+'use client';
 import { useState, useCallback } from 'react';
 import { m } from 'framer-motion';
 // @mui
@@ -35,8 +36,6 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useResponsive } from 'src/hooks/use-responsive';
 // routes
 import { paths } from 'src/routes/paths';
-// _mock
-import { _mock } from 'src/_mock';
 // components
 import Label from 'src/components/label';
 import Image from 'src/components/image';
@@ -230,7 +229,7 @@ export default function HomeHugePackElements() {
             color="error"
             variant="soft"
             onDelete={() => {}}
-            avatar={<Avatar alt={_mock.fullName(2)} src={_mock.image.avatar(2)} />}
+            avatar={<Avatar alt="User 2" src="https://via.placeholder.com/50" />}
             label="Chip"
           />
         </m.div>
@@ -247,14 +246,14 @@ export default function HomeHugePackElements() {
       >
         <m.div variants={varFade().in}>
           <Badge variant="online" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-            <Avatar src={_mock.image.avatar(19)} alt={_mock.fullName(19)} />
+            <Avatar src="https://via.placeholder.com/50" alt="User 19" />
           </Badge>
         </m.div>
 
         <m.div variants={varFade().in}>
           <AvatarGroup>
             {[...Array(8)].map((_, index) => (
-              <Avatar key={index} src={_mock.image.avatar(index)} />
+              <Avatar key={index} src={`https://via.placeholder.com/50?text=${index}`} />
             ))}
           </AvatarGroup>
         </m.div>
@@ -362,8 +361,8 @@ export default function HomeHugePackElements() {
                       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                     >
                       <Avatar
-                        alt={_mock.fullName(0)}
-                        src={_mock.image.avatar(0)}
+                        alt="User 0"
+                        src="https://via.placeholder.com/50"
                         sx={{
                           width: 48,
                           height: 48,
@@ -378,7 +377,7 @@ export default function HomeHugePackElements() {
                 <Box sx={{ px: 1 }}>
                   <Image
                     alt="cover-url"
-                    src={_mock.image.cover(12)}
+                    src="https://via.placeholder.com/1600x900"
                     ratio="16/9"
                     sx={{
                       borderRadius: 1.5,

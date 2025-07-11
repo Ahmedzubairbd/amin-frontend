@@ -7,8 +7,6 @@ import Tabs from '@mui/material/Tabs';
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
-// _mock
-import { _userAbout, _userPlans, _userPayment, _userInvoices, _userAddressBook } from 'src/_mock';
 // components
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
@@ -91,7 +89,7 @@ export default function AccountView() {
 
       {currentTab === 'notifications' && <AccountNotifications />}
 
-      {currentTab === 'social' && <AccountSocialLinks socialLinks={_userAbout.socialLinks} />}
+      {currentTab === 'social' && <AccountSocialLinks />}
 
       {currentTab === 'security' && <AccountChangePassword />}
     </Container>

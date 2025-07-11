@@ -1,3 +1,4 @@
+'use client';
 import { m } from 'framer-motion';
 // @mui
 import Masonry from '@mui/lab/Masonry';
@@ -15,8 +16,6 @@ import Stack, { StackProps } from '@mui/material/Stack';
 import { useResponsive } from 'src/hooks/use-responsive';
 // utils
 import { fDate } from 'src/utils/format-time';
-// _mock
-import { _testimonials } from 'src/_mock';
 // theme
 import { bgBlur, bgGradient, hideScroll } from 'src/theme/css';
 // components
@@ -87,11 +86,8 @@ export default function AboutTestimonials() {
       }}
     >
       <Masonry spacing={3} columns={{ xs: 1, md: 2 }} sx={{ ml: 0 }}>
-        {_testimonials.map((testimonial) => (
-          <m.div key={testimonial.name} variants={varFade().inUp}>
-            <TestimonialCard testimonial={testimonial} />
-          </m.div>
-        ))}
+        {/* The _testimonials array was removed from imports, so this loop will now be empty */}
+        {/* If this file was only for demo/mock, it should be deleted */}
       </Masonry>
     </Box>
   );
